@@ -13,3 +13,4 @@
 
 ## Notes
 - after hitting endpoint ``api/v1/init``, stick to use token from response payload for api token authorization header
+- error response still not match the expected
