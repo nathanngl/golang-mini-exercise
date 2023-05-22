@@ -32,4 +32,33 @@ func (r *WithdrawalRepository) CreateWithdrawal(withdrawal *model.Withdrawal) er
 	return nil
 }
 
-// Add more repository methods as needed
+func (r *WithdrawalRepository) GetWithdrawalsByWithdrawnBy(withdrawnBy string) ([]*model.Withdrawal, error) {
+	query := "SELECT id, withdrawn_by, status, withdrawn_at, amount, reference_id FROM withdrawals WHERE withdrawn_by = ?"
+
+	rows, err := r.db.Query(query, withdrawnBy)
+	if err != nil {
+		log.Println("Error executing query:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	withdrawals := []*model.Withdrawal{}
+
+	for rows.Next() {
+		withdrawal := &model.Withdrawal{}
+		err := rows.Scan(&withdrawal.ID, &withdrawal.WithdrawnBy, &withdrawal.Status, &withdrawal.WithdrawnAt, &withdrawal.Amount, &withdrawal.ReferenceID)
+		if err != nil {
+			log.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		withdrawals = append(withdrawals, withdrawal)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println("Error iterating over rows:", err)
+		return nil, err
+	}
+
+	return withdrawals, nil
+}

@@ -118,3 +118,25 @@ func (r *WalletRepository) UpdateWalletBalance(ownerId string, amount float64) (
 		"balance": amount,
 	}, nil
 }
+
+func (r *WalletRepository) IsWalletEnabled(ownerId string) (bool, error) {
+	stmt, err := r.db.Prepare("SELECT status FROM wallets WHERE owned_by = ?")
+	if err != nil {
+		log.Println("Error preparing statement:", err)
+		return false, err
+	}
+	defer stmt.Close()
+
+	var status string
+	err = stmt.QueryRow(ownerId).Scan(&status)
+	if err != nil {
+		log.Println("Error scanning rows:", err)
+		return false, err
+	}
+
+	if status == "enabled" {
+		return true, nil
+	}
+
+	return false, nil
+}

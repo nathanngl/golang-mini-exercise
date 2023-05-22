@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"errors"
+
 	"github.com/nathanngl/golang-mini-exercise.git/db"
 	model "github.com/nathanngl/golang-mini-exercise.git/models"
 	repository "github.com/nathanngl/golang-mini-exercise.git/repositories"
@@ -9,6 +11,15 @@ import (
 // function to call repository to get wallet by owner
 func GetWalletByOwner(ownerId string) (*model.Wallet, error) {
 	walletRepository := repository.NewWalletRepository(db.GetDB())
+
+	isEnabled, err := walletRepository.IsWalletEnabled(ownerId)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isEnabled {
+		return nil, errors.New("wallet is not enabled")
+	}
 
 	wallet, err := walletRepository.GetWalletByOwner(ownerId)
 	if err != nil {

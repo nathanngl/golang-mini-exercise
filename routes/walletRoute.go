@@ -13,4 +13,5 @@ func WalletRoute(e *echo.Echo) {
 	wallet.GET("", controller.ViewWalletBalance)
 	wallet.POST("/deposits", controller.TopUpWallet)
 	wallet.POST("/withdrawals", controller.WithdrawWallet)
+	wallet.GET("/transactions", controller.ViewWalletTransactions)
 }
