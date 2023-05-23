@@ -140,3 +140,22 @@ func (r *WalletRepository) IsWalletEnabled(ownerId string) (bool, error) {
 
 	return false, nil
 }
+
+func (r *WalletRepository) DisableWallet(ownerId string) (map[string]interface{}, error) {
+	stmt, err := r.db.Prepare("UPDATE wallets SET status = ?, enabled_at = ? WHERE owned_by = ?")
+	if err != nil {
+		log.Println("Error preparing statement:", err)
+		return nil, err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec("disabled", nil, ownerId)
+	if err != nil {
+		log.Println("Error executing statement:", err)
+		return nil, err
+	}
+
+	return map[string]interface{}{
+		"status": "disabled",
+	}, nil
+}

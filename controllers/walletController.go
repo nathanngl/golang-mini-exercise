@@ -85,3 +85,22 @@ func ViewWalletTransactions(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, libraries.ResponseOK(result))
 }
+
+func DisableWallet(c echo.Context) error {
+	ownerId := c.Get("ownerId").(string)
+	isDisabled, err := strconv.ParseBool(c.FormValue("is_disabled"))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, libraries.ResponseError(err.Error()))
+	}
+
+	transaction, err := usecase.DisableWallet(ownerId, isDisabled)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, libraries.ResponseError(err.Error()))
+	}
+
+	result := map[string]interface{}{
+		"transaction": transaction,
+	}
+
+	return c.JSON(http.StatusOK, libraries.ResponseOK(result))
+}
